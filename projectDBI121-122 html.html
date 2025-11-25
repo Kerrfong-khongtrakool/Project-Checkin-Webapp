@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบลงเวลาเข้า-ออกงาน | Pro Complete</title>
+  <meta name="description" content="ระบบลงเวลาเข้า-ออกงาน project DBI121-122">
+  <link rel="stylesheet" href="projectDBI121-122.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <svg class="clock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="header-text">
+          <h1>ระบบลงเวลาเข้า-ออกงาน</h1>
+          <p class="header-subtitle">ระบบลงเวลาเข้า-ออกงาน project DBI121-122</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content(เมนูหลัก) -->
+  <main class="container">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="attendance">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        ลงเวลา
+      </button>
+      <button class="tab-btn" data-tab="ot-request">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        ขอ OT
+      </button>
+      <button class="tab-btn" data-tab="history">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10H3"/>
+          <path d="M21 6H3"/>
+          <path d="M21 14H3"/>
+          <path d="M21 18H3"/>
+        </svg>
+        ประวัติ
+      </button>
+      <button class="tab-btn" data-tab="leave">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        ลางาน
+      </button>
+    </div>
+
+    <!-- Attendance Tab -->
+    <div class="tab-content active" id="attendance-tab">
+      <div class="grid-layout">
+        <!-- Left Column -->
+        <div class="space-y">
+          <!-- Current Time Card -->
+          <div class="time-display-card">
+            <div class="time-display-content">
+              <p class="time-label">เวลาปัจจุบัน</p>
+              <p class="current-time" id="currentTime">00:00:00</p>
+              <p class="current-date" id="currentDate">-</p>
+            </div>
+          </div>
+
+          <!-- Employee Quick Info(หน้าต่างใส่ข้อมูลพนักงาน) -->
+          <div class="card employee-quick-card">
+            <div class="employee-quick-header">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <h3>ข้อมูลพนักงาน</h3>
+            </div>
+            <div class="employee-info-display">
+              <div class="info-row">
+                <span class="info-label">ชื่อ:</span>
+                <span class="info-value" id="quickEmployeeName">-</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">รหัส:</span>
+                <span class="info-value" id="quickEmployeeId">-</span>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" id="changeEmployeeBtn">
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              เปลี่ยนพนักงาน
+            </button>
+          </div>
+
+          <!-- Location Status(สถานะตำแหน่ง) -->
+          <div class="card location-card" id="locationCard">
+            <div class="location-header">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <h3>สถานะตำแหน่ง</h3>
+            </div>
+            <div id="locationStatus" class="location-status">
+              <div class="location-checking">🔍 กำลังตรวจสอบ GPS...</div>
+            </div>
+            <button class="btn btn-sm btn-outline" id="refreshLocationBtn">รีเฟรช GPS</button>
+          </div>
+
+          <!-- Day Type Selector(เลือกประเภทวัน) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="header-with-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <div>
+                  <h3>ประเภทวันทำงาน</h3>
+                  <p class="text-sm text-muted">เลือกประเภทวันสำหรับการคำนวณค่าแรง</p>
+                </div>
+              </div>
+              <span class="badge" id="dayTypeBadge">📅 วันปกติ</span>
+            </div>
+            <div class="btn-grid">
+              <button class="day-type-btn active" data-type="normal">
+                <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <div>
+                  <div class="font-bold">วันปกติ</div>
+                  <div class="text-xs">อัตราค่าแรงปกติ</div>
+                </div>
+              </button>
+              <button class="day-type-btn" data-type="special">
+                <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <div>
+                  <div class="font-bold">วันพิเศษ</div>
+                  <div class="text-xs">วันหยุด/นักขัตฤกษ์ (x1.5)</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Clock Buttons(ปุ่มกด) -->
+          <div>
+            <h3 class="section-title">⏰ เวลางานปกติ (8:30 - 16:30)</h3>
+            <div class="btn-grid">
+              <button class="btn btn-success btn-xl" id="clockInBtn">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"/>
+                  <polyline points="10 17 3 17 3 11"/>
+                  <line x1="21" y1="3" x2="14" y2="10"/>
+                  <line x1="3" y1="17" x2="10" y2="10"/>
+                </svg>
+                ลงเวลาเข้างาน
+              </button>
+              <button class="btn btn-danger btn-xl" id="clockOutBtn" disabled>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 21 3 21 3 15"/>
+                  <polyline points="14 7 21 7 21 13"/>
+                  <line x1="3" y1="21" x2="10" y2="14"/>
+                  <line x1="21" y1="7" x2="14" y2="14"/>
+                </svg>
+                ลงเวลาออกงาน
+              </button>
+            </div>
+            <button class="btn btn-outline btn-full" id="manualTimeBtn" style="margin-top: 0.5rem;">
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              ระบุเวลาเอง
+            </button>
+          </div>
+
+          <!-- QR Code Scanner(ปุ่มแสกน QR) -->
+          <div class="card qr-card">
+            <div class="qr-header">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              <h3>สแกน QR Code</h3>
+            </div>
+            <p class="text-sm text-muted">สแกน QR Code ที่ติดตั้งในสถานที่ทำงานเพื่อลงเวลา</p>
+            <button class="btn btn-primary btn-full" id="scanQrBtn">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              เปิดกล้องสแกน QR
+            </button>
+          </div>
+
+          <!-- Status Cards(สถานะ) -->
+          <div id="workingStatus" class="status-card status-success" style="display: none;">
+            <div class="status-header">
+              <div class="pulse-indicator"></div>
+              <p class="status-text">กำลังทำงานอยู่</p>
+            </div>
+            <div class="status-time">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <p id="workDuration">00:00:00</p>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="space-y">
+          <!-- Stats Summary(สถิติ) -->
+          <div class="card">
+            <div class="card-header">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3v18h18"/>
+                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+              </svg>
+              <h2>สถิติวันนี้</h2>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-icon stat-icon-success">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 3 21 3 21 9"/>
+                    <polyline points="10 17 3 17 3 11"/>
+                    <line x1="21" y1="3" x2="14" y2="10"/>
+                    <line x1="3" y1="17" x2="10" y2="10"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="stat-label">เวลาเข้างาน</p>
+                  <p class="stat-value" id="lastClockIn">-</p>
+                  <p class="stat-status" id="lateStatus"></p>
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-icon stat-icon-danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 21 3 21 3 15"/>
+                    <polyline points="14 7 21 7 21 13"/>
+                    <line x1="3" y1="21" x2="10" y2="14"/>
+                    <line x1="21" y1="7" x2="14" y2="14"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="stat-label">เวลาออกงาน</p>
+                  <p class="stat-value" id="lastClockOut">-</p>
+                </div>
+              </div>
+              <div class="stat-item stat-highlight">
+                <div class="stat-icon stat-icon-primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="stat-label">เวลาทำงานจริง</p>
+                  <p class="stat-value stat-value-lg" id="totalWorkTime">0 ชม. 0 นาที</p>
+                  <p class="stat-note" id="workTimeNote">เวลามาตรฐาน: 8 ชม.</p>
+                </div>
+              </div>
+              <div class="stat-item stat-warning" id="penaltyCard" style="display: none;">
+                <div class="stat-icon stat-icon-warning">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="stat-label">การหักเงิน</p>
+                  <p class="stat-value stat-value-warning" id="penaltyAmount">0 บาท</p>
+                  <p class="stat-note" id="penaltyReason">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's History(ประวัติเข้างานวันนี้) -->
+          <div class="card">
+            <div class="card-header">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <h2>ประวัติการลงเวลาวันนี้</h2>
+            </div>
+            <div id="todayHistory" class="history-list">
+              <p class="text-center text-muted">ยังไม่มีการลงเวลาวันนี้</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OT Request Tab(หน้าต่างแจ้งขอ OT) -->
+    <div class="tab-content" id="ot-request-tab">
+      <div class="form-container">
+        <div class="card">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <h2>ขออนุมัติทำ OT</h2>
+          </div>
+          <div class="info-box info-box-warning">
+            ⚠️ <strong>หมายเหตุ:</strong> ต้องยื่นคำขออนุมัติ OT ล่วงหน้าก่อนเริ่มทำ OT เท่านั้น
+          </div>
+          <form id="otRequestForm">
+            <div class="form-group">
+              <label for="otDate">วันที่ขอทำ OT</label>
+              <input type="date" id="otDate" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="otStartTime">เวลาเริ่มต้น OT</label>
+              <input type="time" id="otStartTime" class="input-field" value="16:30" required>
+            </div>
+            <div class="form-group">
+              <label for="otEndTime">เวลาสิ้นสุด OT</label>
+              <input type="time" id="otEndTime" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="otReason">เหตุผลที่ต้องทำ OT</label>
+              <textarea id="otReason" class="input-field" rows="4" placeholder="ระบุเหตุผลที่ต้องทำ OT..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full btn-lg">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+              ส่งคำขออนุมัติ
+            </button>
+          </form>
+        </div>
+
+        <!-- OT Requests List(แจ้งขอทำ OT) -->
+        <div class="card">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10H3"/>
+              <path d="M21 6H3"/>
+              <path d="M21 14H3"/>
+              <path d="M21 18H3"/>
+            </svg>
+            <h2>คำขออนุมัติ OT ของฉัน</h2>
+          </div>
+          <div id="otRequestsList" class="requests-list">
+            <p class="text-center text-muted">ยังไม่มีคำขออนุมัติ OT</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab(ประวัติย้อนหลัง) -->
+    <div class="tab-content" id="history-tab">
+      <div class="card">
+        <div class="card-header">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <h2>ประวัติย้อนหลัง</h2>
+        </div>
+
+        <div class="date-picker-section">
+          <div class="form-group">
+            <label for="historyDate">เลือกวันที่ต้องการดู</label>
+            <input type="date" id="historyDate" class="input-date">
+          </div>
+          <button class="btn btn-primary" id="viewHistoryBtn">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            ดูประวัติ
+          </button>
+        </div>
+
+        <div class="summary-cards">
+          <div class="summary-card">
+            <div class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div class="summary-content">
+              <p class="summary-label">จำนวนวันที่ทำงาน (เดือนนี้)</p>
+              <p class="summary-value" id="workDaysCount">0 วัน</p>
+            </div>
+          </div>
+          <div class="summary-card summary-card-special">
+            <div class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div class="summary-content">
+              <p class="summary-label">วันพิเศษ (เดือนนี้)</p>
+              <p class="summary-value" id="specialDaysCount">0 วัน</p>
+            </div>
+          </div>
+          <div class="summary-card summary-card-ot">
+            <div class="summary-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="summary-content">
+              <p class="summary-label">รวมชั่วโมง OT (เดือนนี้)</p>
+              <p class="summary-value" id="totalOTHours">0 ชม.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="historicalRecords" class="history-list">
+          <p class="text-center text-muted">เลือกวันที่เพื่อดูประวัติ</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Request Tab(แจ้งแบบฟอร์มการลา) -->
+    <div class="tab-content" id="leave-tab">
+      <div class="form-container">
+        <div class="card">
+          <div class="card-header">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <h2>แจ้งลางาน / ขาดงาน</h2>
+          </div>
+          <form id="leaveForm">
+            <div class="form-group">
+              <label for="leaveType">ประเภทการลา</label>
+              <select id="leaveType" class="input-field" required>
+                <option value="">เลือกประเภท</option>
+                <option value="sick">ลาป่วย</option>
+                <option value="personal">ลากิจ</option>
+                <option value="vacation">ลาพักร้อน</option>
+                <option value="absent">ขาดงาน</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="leaveDate">วันที่ลา</label>
+              <input type="date" id="leaveDate" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label for="leaveReason">เหตุผล</label>
+              <textarea id="leaveReason" class="input-field" rows="4" placeholder="ระบุเหตุผลการลา..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full btn-lg">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+              ส่งคำขอ
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Employee Modal(ข้อมูลพนักงาน) -->
+  <div class="modal" id="employeeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ข้อมูลพนักงาน</h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="employeeForm">
+        <div class="form-group">
+          <label for="employeeName">ชื่อ-นามสกุล</label>
+          <input type="text" id="employeeName" class="input-field" placeholder="กรุณากรอกชื่อ-นามสกุล" required>
+        </div>
+        <div class="form-group">
+          <label for="employeeId">รหัสพนักงาน</label>
+          <input type="text" id="employeeId" class="input-field" placeholder="กรุณากรอกรหัสพนักงาน" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelModalBtn">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manual Time Modal(ลงเข้า-ออกงานแบบเรียลไทม์) -->
+  <div class="modal" id="manualTimeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ระบุเวลาเข้า-ออกงาน</h2>
+        <button class="modal-close" id="closeManualTimeBtn">&times;</button>
+      </div>
+      <form id="manualTimeForm">
+        <div class="form-group">
+          <label for="manualClockInTime">เวลาเข้างาน</label>
+          <input type="time" id="manualClockInTime" class="input-field" required>
+        </div>
+        <div class="form-group">
+          <label for="manualClockOutTime">เวลาออกงาน</label>
+          <input type="time" id="manualClockOutTime" class="input-field">
+        </div>
+        <div class="info-box">
+          ℹ️ หากต้องการระบุเฉพาะเวลาเข้า ให้เว้นช่องเวลาออกว่างไว้
+        </div> 
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancelManualTimeBtn">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div class="modal" id="qrScannerModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h2>สแกน QR Code</h2>
+        <button class="modal-close" id="closeQrScannerBtn">&times;</button>
+      </div>
+      <div class="qr-scanner-container">
+        <video id="qrVideo" class="qr-video"></video>
+        <div class="qr-overlay">
+          <div class="qr-frame"></div>
+        </div>
+        <p class="text-center text-muted" style="margin-top: 1rem;">สแกน QR Code ให้อยู่ในกรอบ</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="projectDBI121-122 java.js"></script>
+</body>
+</html>
